@@ -73,7 +73,6 @@ class SortedList:
         return string
 
 
-
 class HashTable:
     '''Set with repetitions (bag)'''
     def __init__(self):
