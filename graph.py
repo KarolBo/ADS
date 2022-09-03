@@ -76,8 +76,8 @@ class Graph:
                 visited.remove(u)
         return False
 
-    def topologicalSort(self):
-        if self.hasCycles():
+    def topologicalSort(self, force=False):
+        if not force and self.hasCycles():
             print('The graph is not a DAG')
             return
         sorted_vertices = []
@@ -97,24 +97,68 @@ class Graph:
             self._topologicalSort_rec(v, sorted_vertices, visited)
         sorted_vertices.append(u)
 
+    def stronglyConnectedComponents(self):
+        top_sort = self.topologicalSort(force=True)
+        transposed = self.getTransposition()
+        scc = {}
+        visited = set()
+        for u in top_sort:
+            if u in visited:
+                continue
+            scc[u] = self.getDFSTree(transposed, u, visited)
+        return scc
+
+    def getTransposition(self):
+        n = len(self.graph)
+        transposed = [[] for _ in range(n)]
+        for u in range(n):
+            for v in self.graph[u]:
+                transposed[v].append(u)
+        return transposed
+
+    @staticmethod
+    def getDFSTree(G, u, visited):
+        tree = []
+        stack = [u]
+        visited.add(u)
+        while stack:
+            u = stack.pop()
+            tree.append(u)
+            for v in G[u]:
+                if v not in visited:
+                    stack.append(v)
+                    visited.add(v)
+        return tree
+
 
 ########################################################
-graph = [[1, 7], [2, 7], [5], [4], [5], [], [7], [], []]
-my_graph = Graph(graph, 'adj_list')
+
+
+# Searching
 # my_graph.BFS_iter(0)
 # my_graph.BFS_rec(source=0)
 # my_graph.DFS_iter(0)
 # my_graph.DFS_rec(0)
-cloths = {
-    0: 'pants',
-    1: 'trausers',
-    2: 'belt',
-    3: 'shirt',
-    4: 'tie',
-    5: 'jacket',
-    6: 'socks',
-    7: 'shoes',
-    8: 'watch'
-}
-top_sort = my_graph.topologicalSort()
-print([cloths[v] for v in top_sort])
+
+# Topological sort
+# graph = [[1, 7], [2, 7], [5], [4], [5], [], [7], [], []]
+# my_graph = Graph(graph, 'adj_list')
+# cloths = {
+#     0: 'pants',
+#     1: 'trausers',
+#     2: 'belt',
+#     3: 'shirt',
+#     4: 'tie',
+#     5: 'jacket',
+#     6: 'socks',
+#     7: 'shoes',
+#     8: 'watch'
+# }
+# top_sort = my_graph.topologicalSort()
+# print([cloths[v] for v in top_sort])
+
+# Strongly connected components
+graph = [[1], [2, 4, 5], [3, 6], [2, 7], [0, 5], [6], [5, 7], [7]]
+my_graph = Graph(graph, 'adj_list')
+scc = my_graph.stronglyConnectedComponents()
+print(scc)
