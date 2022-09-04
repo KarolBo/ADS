@@ -1,5 +1,5 @@
 from collections import deque
-from logging.config import valid_ident
+import heapq
 
 # class Vertex:
 #     def __init__(self, val):
@@ -130,7 +130,7 @@ class Graph:
                     visited.add(v)
         return tree
 
-    def kruskal_MST(self):
+    def kruskal_mst(self):
         n = len(self.graph)
         tree_sets = [set([u]) for u in range(n)]
         mst = []
@@ -148,6 +148,26 @@ class Graph:
                     tree_sets[x] = union
                 mst.append((u, v, w))
         return mst
+
+    def prim_mst(self):
+        q = []
+        tree_nodes = set()
+        mst = []
+        u = 0
+        while len(mst) < len(self.graph) - 1:
+            for i, (v, w) in enumerate(self.graph[u]):
+                if v in tree_nodes:
+                    continue
+                heapq.heappush(q, (w, i, u, v))
+            w, i, u, v = heapq.heappop(q)
+            if v in tree_nodes:
+                continue
+            mst.append((u, v, w))
+            tree_nodes.add(u)
+            tree_nodes.add(v)
+            u = v
+        return mst
+
 
 ########################################################
 
@@ -192,6 +212,10 @@ graph = [[(1, 4), (7, 8)],
          [(0, 8), (1, 11), (8, 7), (6, 1)], 
          [(7, 7), (2, 2), (6, 6)]]
 my_graph = Graph(graph, 'adj_list')
-mst = my_graph.kruskal_MST()
-for edge in mst:
-    print(edge[0]+1, '->', edge[1]+1, edge[2])
+mst1 = my_graph.kruskal_mst()
+mst2 = my_graph.prim_mst()
+for edge1 in mst1:
+    print(edge1[0]+1, '->', edge1[1]+1, edge1[2])
+print()
+for edge2 in mst2:
+    print(edge2[0]+1, '->', edge2[1]+1, edge2[2])
