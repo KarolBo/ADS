@@ -130,6 +130,24 @@ class Graph:
                     visited.add(v)
         return tree
 
+    def kruskal_MST(self):
+        n = len(self.graph)
+        tree_sets = [set([u]) for u in range(n)]
+        mst = []
+        edges = set()
+        for u in range(n):
+            for v, w in self.graph[u]:
+                if (v, u, w) not in edges:
+                    edges.add( (u, v, w) )
+        edges = list(edges)
+        edges.sort(key=lambda x: x[2])
+        for u, v, w in edges:
+            if tree_sets[u] != tree_sets[v]:
+                union = tree_sets[u].union(tree_sets[v])
+                for x in union:
+                    tree_sets[x] = union
+                mst.append((u, v, w))
+        return mst
 
 ########################################################
 
@@ -158,7 +176,22 @@ class Graph:
 # print([cloths[v] for v in top_sort])
 
 # Strongly connected components
-graph = [[1], [2, 4, 5], [3, 6], [2, 7], [0, 5], [6], [5, 7], [7]]
+# graph = [[1], [2, 4, 5], [3, 6], [2, 7], [0, 5], [6], [5, 7], [7]]
+# my_graph = Graph(graph, 'adj_list')
+# scc = my_graph.stronglyConnectedComponents()
+# print(scc)
+
+# Minimum spanning tree
+graph = [[(1, 4), (7, 8)], 
+         [(0, 4), (2, 8), (7, 11)], 
+         [(1, 8), (8, 2), (5, 4), (3, 7)], 
+         [(2, 7), (4, 9), (5, 14)], 
+         [(3, 9), (5, 10)], 
+         [(6, 2), (2, 4), (3, 14), (4, 10)], 
+         [(7, 1), (8, 6), (5, 2)], 
+         [(0, 8), (1, 11), (8, 7), (6, 1)], 
+         [(7, 7), (2, 2), (6, 6)]]
 my_graph = Graph(graph, 'adj_list')
-scc = my_graph.stronglyConnectedComponents()
-print(scc)
+mst = my_graph.kruskal_MST()
+for edge in mst:
+    print(edge[0]+1, '->', edge[1]+1, edge[2])
