@@ -168,6 +168,36 @@ class Graph:
             u = v
         return mst
 
+    def bellman_ford(self, s):
+        n = len(self.graph)
+        distances = n * [float('inf')]
+        predecesors = n * [None]
+        distances[s] = 0
+        edges = []
+        for u in range(n):
+            for v, w in self.graph[u]:
+                edges.append((u, v, w))
+                
+        for _ in range(n-1):
+            for u, v, w in edges:
+                if distances[u] + w < distances[v]:
+                    distances[v] = distances[u] + w
+                    predecesors[v] = u
+
+        # check for negative cycles
+        for u, v, w in edges:
+            if distances[u] + w < distances[v]:
+                print('negative cycle detected')
+                return None, None
+        return distances, predecesors
+
+    @classmethod
+    def print_path(cls, u, pred):
+        if pred[u] is None:
+            print(u, end='')
+            return
+        cls.print_path(pred[u], pred)
+        print(' ->', u, end='')
 
 ########################################################
 
@@ -202,20 +232,28 @@ class Graph:
 # print(scc)
 
 # Minimum spanning tree
-graph = [[(1, 4), (7, 8)], 
-         [(0, 4), (2, 8), (7, 11)], 
-         [(1, 8), (8, 2), (5, 4), (3, 7)], 
-         [(2, 7), (4, 9), (5, 14)], 
-         [(3, 9), (5, 10)], 
-         [(6, 2), (2, 4), (3, 14), (4, 10)], 
-         [(7, 1), (8, 6), (5, 2)], 
-         [(0, 8), (1, 11), (8, 7), (6, 1)], 
-         [(7, 7), (2, 2), (6, 6)]]
+# graph = [[(1, 4), (7, 8)], 
+#          [(0, 4), (2, 8), (7, 11)], 
+#          [(1, 8), (8, 2), (5, 4), (3, 7)], 
+#          [(2, 7), (4, 9), (5, 14)], 
+#          [(3, 9), (5, 10)], 
+#          [(6, 2), (2, 4), (3, 14), (4, 10)], 
+#          [(7, 1), (8, 6), (5, 2)], 
+#          [(0, 8), (1, 11), (8, 7), (6, 1)], 
+#          [(7, 7), (2, 2), (6, 6)]]
+# my_graph = Graph(graph, 'adj_list')
+# mst1 = my_graph.kruskal_mst()
+# mst2 = my_graph.prim_mst()
+# for edge1 in mst1:
+#     print(edge1[0]+1, '->', edge1[1]+1, edge1[2])
+# print()
+# for edge2 in mst2:
+#     print(edge2[0]+1, '->', edge2[1]+1, edge2[2])
+
+# Shortest path
+graph = [[(1, 6), (3, 7)], [(2, 5), (3, 8), (4, -4)], [(1, -2)], [(4, 9), (2, -3)], [(2, 7), (0, 2)]]
 my_graph = Graph(graph, 'adj_list')
-mst1 = my_graph.kruskal_mst()
-mst2 = my_graph.prim_mst()
-for edge1 in mst1:
-    print(edge1[0]+1, '->', edge1[1]+1, edge1[2])
+dist, pred = my_graph.bellman_ford(0)
+print(dist)
+my_graph.print_path(4, pred)
 print()
-for edge2 in mst2:
-    print(edge2[0]+1, '->', edge2[1]+1, edge2[2])
