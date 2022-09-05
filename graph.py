@@ -1,5 +1,6 @@
 from collections import deque
 import heapq
+from multiprocessing import heap
 
 # class Vertex:
 #     def __init__(self, val):
@@ -191,6 +192,20 @@ class Graph:
                 return None, None
         return distances, predecesors
 
+    def dijkstra(self, s):
+        q = [(0, 0, s)]
+        distances = len(self.graph) * [float('inf')]
+        distances[s] = 0
+        predecesors = len(self.graph) * [None]
+        while q:
+            _, _, u = heapq.heappop(q)
+            for i, (v, w) in enumerate(self.graph[u]):
+                if distances[u] + w < distances[v]:
+                    distances[v] = distances[u] + w
+                    predecesors[v] = u
+                    heapq.heappush(q, (distances[u] + w, i, v))
+        return distances, predecesors
+
     @classmethod
     def print_path(cls, u, pred):
         if pred[u] is None:
@@ -251,9 +266,12 @@ class Graph:
 #     print(edge2[0]+1, '->', edge2[1]+1, edge2[2])
 
 # Shortest path
-graph = [[(1, 6), (3, 7)], [(2, 5), (3, 8), (4, -4)], [(1, -2)], [(4, 9), (2, -3)], [(2, 7), (0, 2)]]
+graph = [[(1, 6), (3, 7)], [(2, 5), (3, 8), (4, 4)], [(1, 2)], [(4, 9), (2, 3)], [(2, 7), (0, 2)]]
 my_graph = Graph(graph, 'adj_list')
 dist, pred = my_graph.bellman_ford(0)
 print(dist)
 my_graph.print_path(4, pred)
 print()
+dist, pred = my_graph.dijkstra(0)
+print(dist)
+my_graph.print_path(4, pred)
