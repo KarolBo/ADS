@@ -156,11 +156,11 @@ class Graph:
         mst = []
         u = 0
         while len(mst) < len(self.graph) - 1:
-            for i, (v, w) in enumerate(self.graph[u]):
+            for v, w in self.graph[u]:
                 if v in tree_nodes:
                     continue
-                heapq.heappush(q, (w, i, u, v))
-            w, i, u, v = heapq.heappop(q)
+                heapq.heappush(q, (w, u, v))
+            w, u, v = heapq.heappop(q)
             if v in tree_nodes:
                 continue
             mst.append((u, v, w))
@@ -193,17 +193,17 @@ class Graph:
         return distances, predecesors
 
     def dijkstra(self, s):
-        q = [(0, 0, s)]
+        q = [(0, s)]
         distances = len(self.graph) * [float('inf')]
         distances[s] = 0
         predecesors = len(self.graph) * [None]
         while q:
-            _, _, u = heapq.heappop(q)
-            for i, (v, w) in enumerate(self.graph[u]):
+            _, u = heapq.heappop(q)
+            for v, w in self.graph[u]:
                 if distances[u] + w < distances[v]:
                     distances[v] = distances[u] + w
                     predecesors[v] = u
-                    heapq.heappush(q, (distances[u] + w, i, v))
+                    heapq.heappush(q, (distances[u] + w, v))
         return distances, predecesors
 
     @classmethod
@@ -247,31 +247,31 @@ class Graph:
 # print(scc)
 
 # Minimum spanning tree
-# graph = [[(1, 4), (7, 8)], 
-#          [(0, 4), (2, 8), (7, 11)], 
-#          [(1, 8), (8, 2), (5, 4), (3, 7)], 
-#          [(2, 7), (4, 9), (5, 14)], 
-#          [(3, 9), (5, 10)], 
-#          [(6, 2), (2, 4), (3, 14), (4, 10)], 
-#          [(7, 1), (8, 6), (5, 2)], 
-#          [(0, 8), (1, 11), (8, 7), (6, 1)], 
-#          [(7, 7), (2, 2), (6, 6)]]
-# my_graph = Graph(graph, 'adj_list')
-# mst1 = my_graph.kruskal_mst()
-# mst2 = my_graph.prim_mst()
-# for edge1 in mst1:
-#     print(edge1[0]+1, '->', edge1[1]+1, edge1[2])
-# print()
-# for edge2 in mst2:
-#     print(edge2[0]+1, '->', edge2[1]+1, edge2[2])
+graph = [[(1, 4), (7, 8)], 
+         [(0, 4), (2, 8), (7, 11)], 
+         [(1, 8), (8, 2), (5, 4), (3, 7)], 
+         [(2, 7), (4, 9), (5, 14)], 
+         [(3, 9), (5, 10)], 
+         [(6, 2), (2, 4), (3, 14), (4, 10)], 
+         [(7, 1), (8, 6), (5, 2)], 
+         [(0, 8), (1, 11), (8, 7), (6, 1)], 
+         [(7, 7), (2, 2), (6, 6)]]
+my_graph = Graph(graph, 'adj_list')
+mst1 = my_graph.kruskal_mst()
+mst2 = my_graph.prim_mst()
+for edge1 in mst1:
+    print(edge1[0]+1, '->', edge1[1]+1, edge1[2])
+print()
+for edge2 in mst2:
+    print(edge2[0]+1, '->', edge2[1]+1, edge2[2])
 
 # Shortest path
-graph = [[(1, 6), (3, 7)], [(2, 5), (3, 8), (4, 4)], [(1, 2)], [(4, 9), (2, 3)], [(2, 7), (0, 2)]]
-my_graph = Graph(graph, 'adj_list')
-dist, pred = my_graph.bellman_ford(0)
-print(dist)
-my_graph.print_path(4, pred)
-print()
-dist, pred = my_graph.dijkstra(0)
-print(dist)
-my_graph.print_path(4, pred)
+# graph = [[(1, 6), (3, 7)], [(2, 5), (3, 8), (4, 4)], [(1, 2)], [(4, 9), (2, 3)], [(2, 7), (0, 2)]]
+# my_graph = Graph(graph, 'adj_list')
+# dist, pred = my_graph.bellman_ford(0)
+# print(dist)
+# my_graph.print_path(4, pred)
+# print()
+# dist, pred = my_graph.dijkstra(0)
+# print(dist)
+# my_graph.print_path(4, pred)
