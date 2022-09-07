@@ -214,6 +214,42 @@ class Graph:
         cls.print_path(pred[u], pred)
         print(' ->', u, end='')
 
+    def floyd_warshal(self):
+        n = len(self.graph)
+        if self.repr == 'adj_list':
+            D = self.getAdjMat()
+        else:
+            D = self.graph
+
+        P = [[None for _ in range(n)] for _ in range(n)]
+        for i in range(n):
+            for j in range(n):
+                if 0 < D[i][j] < float('inf'):
+                    P[i][j] = i 
+
+        for i in range(n):
+            for j in range(n):
+                for k in range(n):
+                    if D[i][k] + D[k][j] < D[i][j]:
+                        D[i][j] = D[i][k] + D[k][j]
+                        P[i][j] = P[k][j]
+        return D, P
+
+    def getAdjMat(self):
+        n = len(self.graph)
+        mat = [[float('inf') for _ in range(n)] for _ in range(n)]
+        for i in range(n):
+            mat[i][i] = 0
+        for i in range(n):
+            for j, w in self.graph[i]:
+                mat[i][j] = w
+        return mat
+
+    def print_path_from(self, u, v, pred_mat):
+        pred = pred_mat[u]
+        self.print_path(v, pred)
+        print()
+
 ########################################################
 
 
@@ -246,32 +282,38 @@ class Graph:
 # scc = my_graph.stronglyConnectedComponents()
 # print(scc)
 
-# Minimum spanning tree
-graph = [[(1, 4), (7, 8)], 
-         [(0, 4), (2, 8), (7, 11)], 
-         [(1, 8), (8, 2), (5, 4), (3, 7)], 
-         [(2, 7), (4, 9), (5, 14)], 
-         [(3, 9), (5, 10)], 
-         [(6, 2), (2, 4), (3, 14), (4, 10)], 
-         [(7, 1), (8, 6), (5, 2)], 
-         [(0, 8), (1, 11), (8, 7), (6, 1)], 
-         [(7, 7), (2, 2), (6, 6)]]
-my_graph = Graph(graph, 'adj_list')
-mst1 = my_graph.kruskal_mst()
-mst2 = my_graph.prim_mst()
-for edge1 in mst1:
-    print(edge1[0]+1, '->', edge1[1]+1, edge1[2])
-print()
-for edge2 in mst2:
-    print(edge2[0]+1, '->', edge2[1]+1, edge2[2])
+# # Minimum spanning tree
+# TODO: check Prim's
+# graph = [[(1, 4), (7, 8)], 
+#          [(0, 4), (2, 8), (7, 11)], 
+#          [(1, 8), (8, 2), (5, 4), (3, 7)], 
+#          [(2, 7), (4, 9), (5, 14)], 
+#          [(3, 9), (5, 10)], 
+#          [(6, 2), (2, 4), (3, 14), (4, 10)], 
+#          [(7, 1), (8, 6), (5, 2)], 
+#          [(0, 8), (1, 11), (8, 7), (6, 1)], 
+#          [(7, 7), (2, 2), (6, 6)]]
+# my_graph = Graph(graph, 'adj_list')
+# mst1 = my_graph.kruskal_mst()
+# mst2 = my_graph.prim_mst()
+# for edge1 in mst1:
+#     print(edge1[0]+1, '->', edge1[1]+1, edge1[2])
+# print()
+# for edge2 in mst2:
+#     print(edge2[0]+1, '->', edge2[1]+1, edge2[2])
 
 # Shortest path
-# graph = [[(1, 6), (3, 7)], [(2, 5), (3, 8), (4, 4)], [(1, 2)], [(4, 9), (2, 3)], [(2, 7), (0, 2)]]
-# my_graph = Graph(graph, 'adj_list')
-# dist, pred = my_graph.bellman_ford(0)
-# print(dist)
-# my_graph.print_path(4, pred)
-# print()
-# dist, pred = my_graph.dijkstra(0)
-# print(dist)
-# my_graph.print_path(4, pred)
+graph = [[(1, 6), (3, 7)], [(2, 5), (3, 8), (4, 4)], [(1, 2)], [(4, 9), (2, 3)], [(2, 7), (0, 2)]]
+my_graph = Graph(graph, 'adj_list')
+dist, pred = my_graph.bellman_ford(0)
+print(dist)
+my_graph.print_path(4, pred)
+print()
+dist, pred = my_graph.dijkstra(0)
+print(dist)
+my_graph.print_path(4, pred)
+print()
+dist, pred = my_graph.floyd_warshal()
+# for row in dist:
+#     print(row)
+my_graph.print_path_from(0, 4, pred)
