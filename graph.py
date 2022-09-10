@@ -239,8 +239,6 @@ class Graph:
         n = len(self.graph)
         mat = [[float('inf') for _ in range(n)] for _ in range(n)]
         for i in range(n):
-            mat[i][i] = 0
-        for i in range(n):
             for j, w in self.graph[i]:
                 mat[i][j] = w
         return mat
@@ -249,6 +247,65 @@ class Graph:
         pred = pred_mat[u]
         self.print_path(v, pred)
         print()
+
+    def edmonds_karp(self, s, t): # Ford-Fulkerson
+        res_net = self.getResNet()
+        while True:
+            aug_path, c_min = self.getAugPath(res_net, s, t)
+            if not aug_path:
+                f = 0
+                for u in res_net[s]:
+                    if u is None:
+                        continue
+                    f += u[0]
+                return f
+            for i in range(len(aug_path) - 1):
+                u = aug_path[i]
+                v = aug_path[i+1]
+                res_net[u][v][0] += c_min
+                res_net[u][v][1] -= c_min
+                res_net[v][u][1] += c_min
+        
+    def getResNet(self):
+        n = len(self.graph)
+        mat = [[None for _ in range(n)] for _ in range(n)]
+        for i in range(n):
+            mat[i][i] = (0, 0)
+        for i in range(n):
+            for j, w in self.graph[i]:
+                mat[i][j] = [0, w]
+                if not mat[j][i]:
+                    mat[j][i] = [0, 0]
+        return mat
+
+    @staticmethod
+    def getAugPath(res_net, s, t):
+        q = deque([s])
+        seen = set([s])
+        pred = len(res_net) * [None]
+        c_min = float('inf')
+        while q:
+            u = q.popleft()
+            for v, vertex in enumerate(res_net[u]):
+                if vertex is None or vertex[1] == 0 or v in seen:
+                    continue
+                _, c = vertex
+                c_min = min(c_min, c)
+                q.append(v)
+                seen.add(v)
+                pred[v] = u
+
+        path = [t]
+        u = pred[t]
+        while u != s:
+            if u is None:
+                return None, None
+            path.append(u)
+            u = pred[u]
+        path.append(s)
+        path.reverse()
+        return path, c_min
+
 
 ########################################################
 
@@ -282,8 +339,7 @@ class Graph:
 # scc = my_graph.stronglyConnectedComponents()
 # print(scc)
 
-# # Minimum spanning tree
-# TODO: check Prim's
+# Minimum spanning tree
 # graph = [[(1, 4), (7, 8)], 
 #          [(0, 4), (2, 8), (7, 11)], 
 #          [(1, 8), (8, 2), (5, 4), (3, 7)], 
@@ -296,24 +352,35 @@ class Graph:
 # my_graph = Graph(graph, 'adj_list')
 # mst1 = my_graph.kruskal_mst()
 # mst2 = my_graph.prim_mst()
+# sum = 0
 # for edge1 in mst1:
+#     sum += edge1[2]
 #     print(edge1[0]+1, '->', edge1[1]+1, edge1[2])
-# print()
+# print('tree weight:', sum)
+# sum = 0
 # for edge2 in mst2:
+#     sum += edge2[2]
 #     print(edge2[0]+1, '->', edge2[1]+1, edge2[2])
+# print('tree weight:', sum)
 
 # Shortest path
-graph = [[(1, 6), (3, 7)], [(2, 5), (3, 8), (4, 4)], [(1, 2)], [(4, 9), (2, 3)], [(2, 7), (0, 2)]]
-my_graph = Graph(graph, 'adj_list')
-dist, pred = my_graph.bellman_ford(0)
-print(dist)
-my_graph.print_path(4, pred)
-print()
-dist, pred = my_graph.dijkstra(0)
-print(dist)
-my_graph.print_path(4, pred)
-print()
-dist, pred = my_graph.floyd_warshal()
+# graph = [[(1, 6), (3, 7)], [(2, 5), (3, 8), (4, 4)], [(1, 2)], [(4, 9), (2, 3)], [(2, 7), (0, 2)]]
+# my_graph = Graph(graph, 'adj_list')
+# dist, pred = my_graph.bellman_ford(0)
+# print(dist)
+# my_graph.print_path(4, pred)
+# print()
+# dist, pred = my_graph.dijkstra(0)
+# print(dist)
+# my_graph.print_path(4, pred)
+# print()
+# dist, pred = my_graph.floyd_warshal()
 # for row in dist:
 #     print(row)
-my_graph.print_path_from(0, 4, pred)
+# my_graph.print_path_from(0, 4, pred)
+
+# Maximum flow
+g = [[(1, 16), (3, 13)], [(2, 12)], [(3, 9), (5, 20)], [(1, 4), (4, 14)], [(2, 7), (5, 4)], []]
+my_graph = Graph(g, 'adj_list')
+max_flow = my_graph.edmonds_karp(0, 5)
+print(max_flow)
