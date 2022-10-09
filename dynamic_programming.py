@@ -11,7 +11,7 @@ def rod_cut(n, price):
 
 
 def matrix_multiplication(sizes):
-    n = len(sizes) - 1
+    n = len(sizes)
     m = [[float('inf') for _ in range(n)] for _ in range(n)]
     s = [[None for _ in range(n)] for _ in range(n)]
     
@@ -22,12 +22,24 @@ def matrix_multiplication(sizes):
         for i in range(0, n-l+1):
             j = i + l - 1
             for k in range(i, j):
-                cost = m[i][k] + m[k+1][j] + sizes[i] * sizes[k+1] * sizes[j+1]
+                cost = m[i][k] + m[k+1][j] + sizes[i-1] * sizes[k] * sizes[j]
                 if cost < m[i][j]:
                     m[i][j] = cost
                     s[i][j] = k
+    _get_parens(s, 1, n-1)
+    print()
+    return m[1][-1]
 
-    return m[0][-1]
+def _get_parens(s, i, j):
+    if i == j:
+        print(chr(ord('A') - 1 + i), end='')
+    else:
+        print('(', end='')
+        _get_parens(s, i, s[i][j])
+        _get_parens(s, s[i][j]+1, j)
+        print(')', end='')
+
+
 
 
 ###################################################################
