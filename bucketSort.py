@@ -20,6 +20,31 @@ def bucketSort(A):
 
     return A
 
+def bucketSortInsert(A):
+    n = len(A)
+
+    # normalize to 0 - n
+    max_val = max(A)
+    min_val = min(A)
+    A = [(a - min_val) / (max_val - min_val) for a in A]
+    buckets = [[] for _ in range(n)]
+
+    for a in A:
+        b = round(a)
+        buckets[b].append(a)
+        i = len(buckets[b]) - 2
+        while i >= 0 and buckets[b][i] > buckets[b][i+1]:
+            buckets[b][i], buckets[b][i+1] = buckets[b][i+1], buckets[b][i]
+            i -= 1
+    
+    i = 0
+    for subList in buckets:
+        for val in subList:
+            A[i] = val * (max_val - min_val) + min_val # normalize back
+            i += 1
+
+    return A
+
 ###############################################################
 
 array_list = []
@@ -34,5 +59,5 @@ array_list.append([12, 5, 3, 2, 0, -3])
 for arr in array_list:
     test_arr = arr.copy()
     test_arr.sort()
-    arr = bucketSort(arr)
+    arr = bucketSortInsert(arr)
     print(arr == test_arr)

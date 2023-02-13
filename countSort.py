@@ -29,6 +29,33 @@ def countSort(A):
 
     return B
 
+
+def countSort2(A):
+    # init values
+    n = len(A)
+    B = [0] * n
+    min_val = float('inf')
+    max_val = -float('inf')
+    for a in A:
+        min_val = min(min_val, a)
+        max_val = max(max_val, a)
+    r = max_val - min_val + 1
+    C = [0] * r
+
+    # histogram
+    for a in A:
+        idx = a - min_val
+        C[idx] += 1
+
+    # collect sorted array B
+    idx = 0
+    for i, c in enumerate(C):
+        for _ in range(c):
+            B[idx] = min_val + i
+            idx += 1
+
+    return B
+
 ###############################################################
 
 array_list = []
@@ -43,5 +70,5 @@ array_list.append([12, 5, 3, 2, 0, -3])
 for arr in array_list:
     test_arr = arr.copy()
     test_arr.sort()
-    arr = countSort(arr)
+    arr = countSort2(arr)
     print(arr == test_arr)

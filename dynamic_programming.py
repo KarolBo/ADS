@@ -44,9 +44,9 @@ def _get_parens(s, i, j):
 
 ###################################################################
 
-# price = [1, 5, 8, 9, 10, 17, 17, 20, 24, 30]
-# max_money = rod_cut(5, price)
-# print(max_money)
+price = [1, 5, 8, 9, 10, 17, 17, 20, 24, 30]
+max_money = rod_cut(5, price)
+print(max_money)
 
 test_inputs = [
     [40, 20, 30, 10, 30],
