@@ -45,8 +45,35 @@ class SegmentTree:
             )
         return query_iter(0, self.n-1, 0)
 
+
+class BinaryIndexedTree:
+    def __init__(self, arr):
+        self._n = len(arr) + 1
+        self._arr = self._n * [0]
+        for i, val in enumerate(arr):
+            self.update(i, val)
+
+    def update(self, i, val):
+        i += 1
+        while i <= self._n:
+            self._arr[i] += val
+            i += i & (-i)
+
+    def query(self, i):
+        i += 1
+        acc = 0
+        while i > 0:
+            acc += self._arr[i]
+            i -= i & (-i)
+        return acc
+
 ############################################################################################
 
 arr = [18, 17, 13, 19, 15, 11, 20, 12, 33, 25]
 tree = SegmentTree(arr)
-print(tree.query(2, 8) == 123)
+print('Segment tree:')
+print(tree.query(2, 8)) # 123
+print()
+bit = BinaryIndexedTree(arr)
+print('Fenwick tree:')
+print(bit.query(8) - bit.query(1))
