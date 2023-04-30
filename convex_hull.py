@@ -27,7 +27,17 @@ def graham_scan(points: list) -> list:
     points.remove(p0)
     hull = [p0]
     points.sort(key=cmp_to_key(lambda p, q: orientation_cmp(p0, p, q)))
-    print(points)
+    n = len(points)
+    i = 0
+    while i < n:
+        if len(hull) < 2 or get_orientation(hull[-1], hull[-1], points[i]) >= 0:
+            hull.append(points[i])
+            i += 1
+        else:
+            hull.pop(-1)
+    return hull
+
+
 
 
 ###########################################################
@@ -60,6 +70,9 @@ def orientation_cmp(p0, p, q):
 
 test_input = [[1,1],[2,2],[2,0],[2,4],[3,3],[4,2]]
 test_output = [[1,1],[2,0],[4,2],[3,3],[2,4]]
-# output = jarvis(test_input)
-# print(output.sort() == test_output.sort())
-graham_scan(test_input)
+
+jarvis_output = jarvis(test_input)
+print('Jarvis: ', jarvis_output.sort() == test_output.sort())
+
+graham_output = graham_scan(test_input)
+print('Graham: ', graham_output.sort() == test_output.sort())
