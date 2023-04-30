@@ -19,6 +19,7 @@ def jarvis(points: list) -> list:
 
     return hull
 
+
 ###########################################################
 
 def graham_scan(points: list) -> list:
@@ -36,8 +37,6 @@ def graham_scan(points: list) -> list:
         else:
             hull.pop(-1)
     return hull
-
-
 
 
 ###########################################################
@@ -64,7 +63,6 @@ def orientation_cmp(p0, p, q):
     if p[0]*p[0] + p[0]*p[1] < q[0]*q[0] + q[0]*q[1]:
         return -1
     return 1
-
 
 ###########################################################
 
