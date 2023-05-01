@@ -60,7 +60,7 @@ def orientation_cmp(p0, p, q):
         return 1
     if orientation > 0:
         return -1
-    if p[0]*p[0] + p[0]*p[1] < q[0]*q[0] + q[0]*q[1]:
+    if p[0]*p[0] + p[1]*p[1] < q[0]*q[0] + q[1]*q[1]:
         return -1
     return 1
 
