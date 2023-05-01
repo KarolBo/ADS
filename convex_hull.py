@@ -31,11 +31,11 @@ def graham_scan(points: list) -> list:
     n = len(points)
     i = 0
     while i < n:
-        if len(hull) < 2 or get_orientation(hull[-1], hull[-1], points[i]) >= 0:
+        if len(hull) < 2 or get_orientation(hull[-2], hull[-1], points[i]) >= 0:
             hull.append(points[i])
-            i += 1
         else:
-            hull.pop(-1)
+            hull[-1] = points[i]
+        i += 1
     return hull
 
 
@@ -66,11 +66,11 @@ def orientation_cmp(p0, p, q):
 
 ###########################################################
 
-test_input = [[3,0],[4,0],[5,0],[6,1],[7,2],[7,3],[7,4],[6,5],[5,5],[4,5],[3,5],[2,5],[1,4],[1,3],[1,2],[2,1],[4,2],[0,3]]
-test_output = [[3,5],[0,3],[2,1],[5,0],[3,0],[7,3],[6,1],[4,5],[1,4],[7,2],[4,0],[6,5],[1,2],[5,5],[2,5],[7,4]]
+test_input = [[1,1],[2,2],[2,0],[2,4],[3,3],[4,2]]
+test_output = [(1,1),(2,0),(4,2),(3,3),(2,4)]
 
 jarvis_output = jarvis(test_input)
-print('Jarvis: ', jarvis_output.sort() == test_output.sort())
+print('Jarvis: ', sorted(jarvis_output) == sorted(test_output))
 
 graham_output = graham_scan(test_input)
-print('Graham: ', graham_output.sort() == test_output.sort())
+print('Graham: ', sorted(graham_output) == sorted(test_output))
