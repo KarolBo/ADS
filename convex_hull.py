@@ -30,10 +30,9 @@ def jarvis(points: list) -> list:
 ###########################################################
 
 def graham_scan(points: list) -> list:
-    # p0 = find_leftmost(points)
-    p0 = list(min([(x, y) for x, y in points]))
+    p0 = find_leftmost(points)
     hull = []
-    points.sort(key=cmp_to_key(lambda p, q: get_orientation(p0, p, q)))
+    points.sort(key=cmp_to_key(lambda p, q: orientation_cmp(p0, p, q)))
 
     # handle colinear points at the beggining
     i = 0
@@ -68,7 +67,8 @@ def monotone_chain(points: list[list[int]]) -> list[list[int]]:
         lower.pop(-1)
       lower.append(tuple(p))
 
-    return list(set(upper+lower))
+    hull = list(set(upper+lower))
+    return [[x, y] for x, y in hull]
 
 ###########################################################
 
@@ -112,8 +112,6 @@ print('Jarvis: ', sorted(jarvis_output) == sorted(test_output))
 
 graham_output = graham_scan(list(test_input))
 print('Graham: ', sorted(graham_output) == sorted(test_output))
-print(sorted(graham_output))
-print(sorted(test_output))
 
 andrews_output = monotone_chain(list(test_input))
 print('Andrew: ', sorted(andrews_output) == sorted(test_output))
