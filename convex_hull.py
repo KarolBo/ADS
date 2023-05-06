@@ -30,55 +30,90 @@ def jarvis(points: list) -> list:
 ###########################################################
 
 def graham_scan(points: list) -> list:
-    points = [(x, y) for x, y in points]
-    p0 = find_leftmost(points)
-    points.remove(p0)
-    hull = [p0]
-    points.sort(key=cmp_to_key(lambda p, q: orientation_cmp(p0, p, q)))
-    n = len(points)
-    i = 0
-    while i < n:
-        if len(hull) < 2 or get_orientation(hull[-2], hull[-1], points[i]) >= 0:
-            hull.append(points[i])
-            i += 1
-        else:
-            hull.pop(-1)
-    return [[x, y] for x, y in hull]
+    # p0 = find_leftmost(points)
+    p0 = list(min([(x, y) for x, y in points]))
+    hull = []
+    points.sort(key=cmp_to_key(lambda p, q: get_orientation(p0, p, q)))
 
+    # handle colinear points at the beggining
+    i = 0
+    n = len(points)
+    while i < (n - 1) and get_orientation(p0, points[i], points[i+1]) == 0:
+        i += 1
+    points[:i+1] = sorted(points[:i+1], key=lambda p: get_distance(p0, p))
+
+    # main loop
+    for p in points:
+        while len(hull) > 1 and get_orientation(hull[-2], hull[-1], p) < 0:
+            hull.pop(-1)
+        hull.append(p)
+
+    return hull
+
+###########################################################
+
+def monotone_chain(points: list[list[int]]) -> list[list[int]]:
+    points.sort(key=lambda t: tuple(t))
+    upper = []
+    lower = []
+
+    for p in points:
+      # upper
+      while len(upper) > 1 and get_orientation(upper[-2], upper[-1], p) > 0:
+        upper.pop(-1)
+      upper.append(tuple(p))
+
+      # lower
+      while len(lower) > 1 and get_orientation(lower[-2], lower[-1], p) < 0:
+        lower.pop(-1)
+      lower.append(tuple(p))
+
+    return list(set(upper+lower))
 
 ###########################################################
 
 def find_leftmost(points: list) -> list:
     lm = points[0]
     for p in points[1:]:
-        if p[1] < lm[1] or p[1] == lm[1] and p[0] < lm[0]:
+        if p[0] < lm[0] or p[0] == lm[0] and p[1] < lm[1]:
             lm = p
     return lm
 
 
 # det < 0 -> clockwise
-def get_orientation(p1, p2, p3):
-    return (p2[0] - p1[0]) * (p3[1] - p2[1]) - (p2[1] - p1[1]) * (p3[0] - p2[0])
+def get_orientation(p, q, r):
+    px = q[0] - p[0]
+    py = q[1] - p[1]
+    qx = r[0] - q[0]
+    qy = r[1] - q[1]
+    return (px * qy) - (py * qx)
 
 
 def orientation_cmp(p0, p, q):
     orientation = get_orientation(p0, p, q)
     if orientation < 0:
         return 1
-    if orientation > 0:
+    elif orientation > 0:
         return -1
-    factor = 1 if p[0] <= p0[0] else -1 # on the right of p0 the nearest are first, on the left the othey way round
-    if (p[0] - p0[0])**2 + (p[1] - p0[1])**2 > (q[0] - p0[0])**2 + (q[1] - p0[1])**2:
-        return -factor
-    return factor
+
+    return get_distance(p0, q) - get_distance(p0, p)
+    
+
+def get_distance(p, q):
+    return abs(p[0]-q[0]) + abs(p[1]-q[1])
 
 ###########################################################
 
-test_input = [[3,0],[4,0],[5,0],[6,1],[7,2],[7,3],[7,4],[6,5],[5,5],[4,5],[3,5],[2,5],[1,4],[1,3],[1,2],[2,1]]
-test_output = [[4,0],[1,3],[2,5],[6,5],[2,1],[5,0],[6,1],[1,4],[3,0],[1,2],[5,5],[7,2],[7,4],[7,3],[3,5],[4,5]]
+test_input = [[3,0],[4,0],[5,0],[6,1],[7,2],[7,3],[7,4],[6,5],[5,5],[4,5],[3,5],[2,5],[1,4],[1,3],[1,2],[2,1],[4,2],[0,3]]
+test_output = [[3,5],[0,3],[2,1],[5,0],[3,0],[7,3],[6,1],[4,5],[1,4],[7,2],[4,0],[6,5],[1,2],[5,5],[2,5],[7,4]]
 
-jarvis_output = jarvis(test_input)
+jarvis_output = jarvis(list(test_input))
 print('Jarvis: ', sorted(jarvis_output) == sorted(test_output))
 
-graham_output = graham_scan(test_input)
+graham_output = graham_scan(list(test_input))
 print('Graham: ', sorted(graham_output) == sorted(test_output))
+print(sorted(graham_output))
+print(sorted(test_output))
+
+andrews_output = monotone_chain(list(test_input))
+print('Andrew: ', sorted(andrews_output) == sorted(test_output))
