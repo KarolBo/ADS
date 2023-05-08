@@ -34,7 +34,7 @@ def graham_scan(points: list) -> list:
     hull = []
     points.sort(key=cmp_to_key(lambda p, q: orientation_cmp(p0, p, q)))
 
-    # handle colinear points at the beggining
+    # handle colinear points at the beginning
     i = 0
     n = len(points)
     while i < (n - 1) and get_orientation(p0, points[i], points[i+1]) == 0:
